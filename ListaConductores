@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Lista de Conductores</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f2f2f2;
+    margin:0;
+    padding:20px;
+}
+
+.contenedor{
+    max-width:1400px;
+    margin:auto;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+h2{
+    margin-top:0;
+    text-align:center;
+}
+
+.filtros{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+    align-items:end;
+}
+
+input{
+    padding:10px;
+    font-size:14px;
+}
+
+button{
+    padding:10px 20px;
+    background:#0078d7;
+    color:white;
+    border:none;
+    cursor:pointer;
+    border-radius:5px;
+    font-size:14px;
+}
+
+button:hover{
+    background:#005ea6;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+th{
+    background:#0078d7;
+    color:white;
+    padding:10px;
+    border:1px solid #ddd;
+}
+
+td{
+    padding:10px;
+    border:1px solid #ddd;
+    text-align:center;
+}
+
+tr:nth-child(even){
+    background:#f9f9f9;
+}
+
+#mensaje{
+    margin-top:10px;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="contenedor">
+
+    <h2>Lista de Conductores Registrados</h2>
+
+    <div class="filtros">
+
+        <div>
+            <label>Fecha Inicio</label><br>
+            <input type="date" id="fechaInicio">
+        </div>
+
+        <div>
+            <label>Fecha Fin</label><br>
+            <input type="date" id="fechaFin">
+        </div>
+
+        <div>
+            <button id="btnBuscar">
+                Buscar Registros
+            </button>
+        </div>
+
+    </div>
+
+    <div id="mensaje"></div>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Placa</th>
+                <th>Conductor</th>
+                <th>Transportista</th>
+                <th>Cliente</th>
+            </tr>
+        </thead>
+
+        <tbody id="tablaRegistros">
+        </tbody>
+
+    </table>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const supabaseUrl =
+'https://hwjhemjgyducdnxbahak.supabase.co';
+
+const supabaseKey =
+'sb_publishable_vDgKuupqEqGzLe8Eot0JVg_osYFTOMn';
+
+const db = window.supabase.createClient(
+    supabaseUrl,
+    supabaseKey
+);
+
+document
+.getElementById("btnBuscar")
+.addEventListener("click", cargarDatos);
+
+// FECHA LOCAL PERÚ
+const fechaPeru = new Intl.DateTimeFormat(
+    'en-CA',
+    {
+        timeZone: 'America/Lima',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }
+).format(new Date());
+
+const fechaActual = fechaPeru;
+
+// FECHAS POR DEFECTO
+document.getElementById("fechaInicio").value =
+fechaActual;
+
+document.getElementById("fechaFin").value =
+fechaActual;
+
+// CARGA INICIAL
+cargarDatos();
+
+async function cargarDatos(){
+
+    const mensaje =
+    document.getElementById("mensaje");
+
+    const tbody =
+    document.getElementById("tablaRegistros");
+
+    tbody.innerHTML = "";
+
+    const fechaInicio =
+    document.getElementById("fechaInicio").value;
+
+    const fechaFin =
+    document.getElementById("fechaFin").value;
+
+    mensaje.innerHTML =
+    "CONSULTANDO REGISTROS...";
+
+    mensaje.style.color =
+    "#0078d7";
+
+    let consulta = db
+    .from('ingresos_transportes')
+    .select('*')
+    .order('fecha', { ascending:false })
+    .order('hora', { ascending:false });
+
+    // FILTRO FECHA INICIO
+    if(fechaInicio){
+
+        consulta = consulta.gte(
+            'fecha',
+            fechaInicio
+        );
+
+    }
+
+    // FILTRO FECHA FIN
+    if(fechaFin){
+
+        consulta = consulta.lte(
+            'fecha',
+            fechaFin
+        );
+
+    }
+
+    const { data, error } =
+    await consulta;
+
+    console.log(data);
+    console.log(error);
+
+    if(error){
+
+        mensaje.innerHTML =
+        "ERROR: " + error.message;
+
+        mensaje.style.color =
+        "red";
+
+        return;
+    }
+
+    if(data.length === 0){
+
+        mensaje.innerHTML =
+        "NO SE ENCONTRARON REGISTROS";
+
+        mensaje.style.color =
+        "orange";
+
+        return;
+    }
+
+    mensaje.innerHTML =
+    "TOTAL DE REGISTROS: " + data.length;
+
+    mensaje.style.color =
+    "green";
+
+    data.forEach(registro => {
+
+        const fila =
+        document.createElement("tr");
+
+        fila.innerHTML = `
+            <td>${registro.fecha}</td>
+            <td>${registro.hora}</td>
+            <td>${registro.placa}</td>
+            <td>${registro.conductor}</td>
+            <td>${registro.transportista}</td>
+            <td>${registro.cliente}</td>
+        `;
+
+        tbody.appendChild(fila);
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>
