@@ -76,44 +76,28 @@ button:hover{
     id="placa"
     placeholder="Placa"
     maxlength="10"
-    oninput="
-    this.value = this.value
-    .toUpperCase()
-    .replace(/[^A-Z0-9-]/g,'')
-    ">
+    oninput="convertirPlaca(this)">
 
     <input 
     type="text"
     id="conductor"
     placeholder="Conductor"
     maxlength="100"
-    oninput="
-    this.value = this.value
-    .toUpperCase()
-    .replace(/[^A-ZÁÉÍÓÚÑ ]/g,'')
-    ">
+    oninput="convertirMayusculas(this)">
 
     <input 
     type="text"
     id="transportista"
     placeholder="Transportista"
     maxlength="100"
-    oninput="
-    this.value = this.value
-    .toUpperCase()
-    .replace(/[^A-ZÁÉÍÓÚÑ ]/g,'')
-    ">
+    oninput="convertirMayusculas(this)">
 
     <input 
     type="text"
     id="cliente"
     placeholder="Cliente"
     maxlength="100"
-    oninput="
-    this.value = this.value
-    .toUpperCase()
-    .replace(/[^A-ZÁÉÍÓÚÑ ]/g,'')
-    ">
+    oninput="convertirMayusculas(this)">
 
     <button id="btnGuardar">
         Guardar Registro
@@ -141,6 +125,38 @@ const db = window.supabase.createClient(
 document
 .getElementById("btnGuardar")
 .addEventListener("click", guardarRegistro);
+
+// CONVERTIR TEXTO A MAYÚSCULAS
+function convertirMayusculas(input){
+
+    const posicion = input.selectionStart;
+
+    input.value = input.value
+    .toUpperCase()
+    .replace(/[^A-ZÁÉÍÓÚÑ ]/g,'');
+
+    input.setSelectionRange(
+        posicion,
+        posicion
+    );
+
+}
+
+// CONVERTIR PLACA
+function convertirPlaca(input){
+
+    const posicion = input.selectionStart;
+
+    input.value = input.value
+    .toUpperCase()
+    .replace(/[^A-Z0-9-]/g,'');
+
+    input.setSelectionRange(
+        posicion,
+        posicion
+    );
+
+}
 
 async function guardarRegistro(){
 
@@ -182,8 +198,11 @@ async function guardarRegistro(){
         return;
     }
 
-    mensaje.innerHTML = "GUARDANDO...";
-    mensaje.style.color = "#0078d7";
+    mensaje.innerHTML =
+    "GUARDANDO...";
+
+    mensaje.style.color =
+    "#0078d7";
 
     // FECHA Y HORA LOCAL PERÚ
     const ahoraPeru = new Date(
@@ -242,14 +261,16 @@ async function guardarRegistro(){
         mensaje.innerHTML =
         "ERROR: " + error.message;
 
-        mensaje.style.color = "red";
+        mensaje.style.color =
+        "red";
 
     }else{
 
         mensaje.innerHTML =
         "REGISTRO GUARDADO CORRECTAMENTE";
 
-        mensaje.style.color = "green";
+        mensaje.style.color =
+        "green";
 
         document.getElementById("placa").value = "";
         document.getElementById("conductor").value = "";
