@@ -264,14 +264,19 @@ async function cargarDatos(){
         const fila =
         document.createElement("tr");
 
-        fila.innerHTML = `
-            <td>${registro.fecha}</td>
-            <td>${registro.hora}</td>
-            <td>${registro.placa}</td>
-            <td>${registro.conductor}</td>
-            <td>${registro.transportista}</td>
-            <td>${registro.cliente}</td>
-        `;
+       fila.innerHTML = `
+    	<td>${
+        	registro.fecha
+        	.split('-')
+        	.reverse()
+        	.join('/')
+    	}</td>
+    	<td>${registro.hora}</td>
+    	<td>${registro.placa}</td>
+    	<td>${registro.conductor}</td>
+    	<td>${registro.transportista}</td>
+    	<td>${registro.cliente}</td>
+	`;
 
         tbody.appendChild(fila);
 
