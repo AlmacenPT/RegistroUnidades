@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Registro Conductores</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f2f2f2;
+    margin:0;
+    padding:20px;
+}
+
+.contenedor{
+    max-width:400px;
+    margin:auto;
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+h2{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-top:12px;
+    box-sizing:border-box;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:16px;
+    text-transform:uppercase;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    margin-top:20px;
+    background:#0078d7;
+    color:white;
+    border:none;
+    border-radius:6px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#005ea6;
+}
+
+#mensaje{
+    margin-top:15px;
+    text-align:center;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="contenedor">
+
+    <h2>Registro Conductores</h2>
+
+    <input 
+    type="text"
+    id="placa"
+    placeholder="Placa"
+    maxlength="10"
+    oninput="
+    this.value = this.value
+    .toUpperCase()
+    .replace(/[^A-Z0-9-]/g,'')
+    ">
+
+    <input 
+    type="text"
+    id="conductor"
+    placeholder="Conductor"
+    maxlength="100"
+    oninput="
+    this.value = this.value
+    .toUpperCase()
+    .replace(/[^A-ZÁÉÍÓÚÑ ]/g,'')
+    ">
+
+    <input 
+    type="text"
+    id="transportista"
+    placeholder="Transportista"
+    maxlength="100"
+    oninput="
+    this.value = this.value
+    .toUpperCase()
+    .replace(/[^A-ZÁÉÍÓÚÑ ]/g,'')
+    ">
+
+    <input 
+    type="text"
+    id="cliente"
+    placeholder="Cliente"
+    maxlength="100"
+    oninput="
+    this.value = this.value
+    .toUpperCase()
+    .replace(/[^A-ZÁÉÍÓÚÑ ]/g,'')
+    ">
+
+    <button id="btnGuardar">
+        Guardar Registro
+    </button>
+
+    <div id="mensaje"></div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const supabaseUrl =
+'https://hwjhemjgyducdnxbahak.supabase.co';
+
+const supabaseKey =
+'sb_publishable_vDgKuupqEqGzLe8Eot0JVg_osYFTOMn';
+
+const db = window.supabase.createClient(
+    supabaseUrl,
+    supabaseKey
+);
+
+document
+.getElementById("btnGuardar")
+.addEventListener("click", guardarRegistro);
+
+async function guardarRegistro(){
+
+    const mensaje =
+    document.getElementById("mensaje");
+
+    const placa =
+    document.getElementById("placa")
+    .value
+    .trim();
+
+    const conductor =
+    document.getElementById("conductor")
+    .value
+    .trim();
+
+    const transportista =
+    document.getElementById("transportista")
+    .value
+    .trim();
+
+    const cliente =
+    document.getElementById("cliente")
+    .value
+    .trim();
+
+    if(
+        !placa ||
+        !conductor ||
+        !transportista ||
+        !cliente
+    ){
+
+        mensaje.innerHTML =
+        "COMPLETE TODOS LOS CAMPOS";
+
+        mensaje.style.color = "red";
+
+        return;
+    }
+
+    mensaje.innerHTML = "GUARDANDO...";
+    mensaje.style.color = "#0078d7";
+
+    // FECHA Y HORA LOCAL PERÚ
+    const ahoraPeru = new Date(
+        new Date().toLocaleString(
+            "en-US",
+            { timeZone: "America/Lima" }
+        )
+    );
+
+    const anio =
+    ahoraPeru.getFullYear();
+
+    const mes =
+    String(ahoraPeru.getMonth() + 1)
+    .padStart(2,'0');
+
+    const dia =
+    String(ahoraPeru.getDate())
+    .padStart(2,'0');
+
+    const horas =
+    String(ahoraPeru.getHours())
+    .padStart(2,'0');
+
+    const minutos =
+    String(ahoraPeru.getMinutes())
+    .padStart(2,'0');
+
+    const segundos =
+    String(ahoraPeru.getSeconds())
+    .padStart(2,'0');
+
+    const fechaPeru =
+    `${anio}-${mes}-${dia}`;
+
+    const horaPeru =
+    `${horas}:${minutos}:${segundos}`;
+
+    const { error } = await db
+    .from('ingresos_transportes')
+    .insert([
+        {
+            fecha: fechaPeru,
+            hora: horaPeru,
+            placa,
+            conductor,
+            transportista,
+            cliente
+        }
+    ]);
+
+    console.log(error);
+
+    if(error){
+
+        mensaje.innerHTML =
+        "ERROR: " + error.message;
+
+        mensaje.style.color = "red";
+
+    }else{
+
+        mensaje.innerHTML =
+        "REGISTRO GUARDADO CORRECTAMENTE";
+
+        mensaje.style.color = "green";
+
+        document.getElementById("placa").value = "";
+        document.getElementById("conductor").value = "";
+        document.getElementById("transportista").value = "";
+        document.getElementById("cliente").value = "";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
