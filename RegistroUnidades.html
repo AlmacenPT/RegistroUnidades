@@ -74,8 +74,8 @@ button:hover{
     <input 
     type="text"
     id="placa"
-    placeholder="Placa"
-    maxlength="10"
+    placeholder="Placa / Placa"
+    maxlength="20"
     oninput="convertirPlaca(this)">
 
     <input 
@@ -149,7 +149,7 @@ function convertirPlaca(input){
 
     input.value = input.value
     .toUpperCase()
-    .replace(/[^A-Z0-9-]/g,'');
+    .replace(/[^A-Z0-9-\/]/g,'');
 
     input.setSelectionRange(
         posicion,
@@ -193,7 +193,8 @@ async function guardarRegistro(){
         mensaje.innerHTML =
         "COMPLETE TODOS LOS CAMPOS";
 
-        mensaje.style.color = "red";
+        mensaje.style.color =
+        "red";
 
         return;
     }
