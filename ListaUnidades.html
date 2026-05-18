@@ -56,10 +56,16 @@ button:hover{
     background:#005ea6;
 }
 
+.tabla-responsive{
+    width:100%;
+    overflow-x:auto;
+}
+
 table{
     width:100%;
     border-collapse:collapse;
     margin-top:20px;
+    min-width:700px;
 }
 
 th{
@@ -115,23 +121,27 @@ tr:nth-child(even){
 
     <div id="mensaje"></div>
 
-    <table>
+    <div class="tabla-responsive">
 
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Placa</th>
-                <th>Conductor</th>
-                <th>Transportista</th>
-                <th>Cliente</th>
-            </tr>
-        </thead>
+        <table>
 
-        <tbody id="tablaRegistros">
-        </tbody>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Placa</th>
+                    <th>Conductor</th>
+                    <th>Transportista</th>
+                    <th>Cliente</th>
+                </tr>
+            </thead>
 
-    </table>
+            <tbody id="tablaRegistros">
+            </tbody>
+
+        </table>
+
+    </div>
 
 </div>
 
@@ -264,19 +274,19 @@ async function cargarDatos(){
         const fila =
         document.createElement("tr");
 
-       fila.innerHTML = `
-    	<td>${
-        	registro.fecha
-        	.split('-')
-        	.reverse()
-        	.join('/')
-    	}</td>
-    	<td>${registro.hora}</td>
-    	<td>${registro.placa}</td>
-    	<td>${registro.conductor}</td>
-    	<td>${registro.transportista}</td>
-    	<td>${registro.cliente}</td>
-	`;
+        fila.innerHTML = `
+            <td>${
+                registro.fecha
+                .split('-')
+                .reverse()
+                .join('/')
+            }</td>
+            <td>${registro.hora}</td>
+            <td>${registro.placa}</td>
+            <td>${registro.conductor}</td>
+            <td>${registro.transportista}</td>
+            <td>${registro.cliente}</td>
+        `;
 
         tbody.appendChild(fila);
 
